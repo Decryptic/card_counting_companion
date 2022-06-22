@@ -13,6 +13,16 @@ class Deck {
   
   bool get isEmpty => _deck.isEmpty;
   Card get top => _deck.last;
+  int get burned => _discarded.length;
+  int get pile => _deck.length;
+  
+  int get count {
+    int count = 0;
+    for (var card in _discarded) {
+      count += card.count;
+    }
+    return count;
+  }
   
   Deck([this._ndecks = 1]) : _deck = <Card>[], _discarded = <Card>[] {
     for (int i = 0; i < _ndecks; i++) {
@@ -36,14 +46,6 @@ class Deck {
         _deck.add(_discarded.last);
         _discarded.removeLast();
     }
-  }
-  
-  int count() {
-    int count = 0;
-    for (var card in _discarded) {
-      count += card.count();
-    }
-    return count;
   }
   
   Card pop() {

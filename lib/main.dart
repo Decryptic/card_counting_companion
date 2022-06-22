@@ -2,7 +2,6 @@
 // 20 June 2022
 
 import 'package:flutter/material.dart' hide Card;
-//import 'package:flutter_svg/flutter_svg.dart';
 
 import 'src/card.dart';
 import 'src/deck.dart';
@@ -55,12 +54,77 @@ class _MyHomePageState extends State<MyHomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+  
+  void _handleSelection(String select, BuildContext context) {
+    switch (select) {
+      case 'Settings':
+        // todo
+        break;
+      case 'Reset':
+        _deck.reset();
+        setState(() {
+          _new_deck = true;
+        });
+        break;
+      case 'Shuffle':
+        _deck.shuffle();
+        setState(() {
+          _new_deck = true;
+        });
+        break;
+      case 'Place':
+        String msg = '0 / ' + _deck.pile.toString();
+        if (!_new_deck) {
+          msg = (_deck.burned + 1).toString() + ' / '
+            + (_deck.pile + _deck.burned).toString();
+        }
+        _showAlertDialog(select, msg, context);
+        break;
+      case 'Count':
+        String msg = '0';
+        if (!_new_deck)
+          msg = (_deck.count + _deck.top.count).toString();
+        _showAlertDialog(select, msg, context);
+        break;
+    }
+  }
+  
+  void _showAlertDialog(String title, String message, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(message),
+        content: Text(title),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (value) => _handleSelection(value, context),
+            itemBuilder: (BuildContext ctx) {
+              return { 'Settings', 'Reset', 'Shuffle', 'Place', 'Count' }.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(

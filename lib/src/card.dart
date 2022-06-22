@@ -13,7 +13,7 @@ class Card {
   
   String get png_name => _face.name + '_of_' + _suit.name + '.png';
   
-  int count() {
+  int get count {
     switch (_face) {
       case Face.two:
       case Face.three:
