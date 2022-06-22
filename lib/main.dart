@@ -127,26 +127,36 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Center(
-        child: Column(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Spacer(),
             Expanded(
-              flex: 8,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    if (!_new_deck) {
-                      _deck.pop();
-                      if (_deck.isEmpty) {
-                        _deck.shuffle();
-                        _new_deck = true;
-                      }
-                    }
-                    else _new_deck = false;
-                  });
-                },
-                child: Image.asset('assets/cards/' + (_new_deck ? 'back.png' : _deck.top.png_name)),
+              flex: 18,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Spacer(),
+                  Expanded(
+                    flex: 8,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (!_new_deck) {
+                            _deck.pop();
+                            if (_deck.isEmpty) {
+                              _deck.shuffle();
+                              _new_deck = true;
+                            }
+                          }
+                          else _new_deck = false;
+                        });
+                      },
+                      child: Image.asset('assets/cards/' + (_new_deck ? 'back.png' : _deck.top.png_name)),
+                    ),
+                  ),
+                  const Spacer(),
+                ],
               ),
             ),
             const Spacer(),
