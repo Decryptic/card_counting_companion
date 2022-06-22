@@ -5,6 +5,7 @@ import 'package:flutter/material.dart' hide Card;
 
 import 'src/card.dart';
 import 'src/deck.dart';
+import 'src/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _handleSelection(String select, BuildContext context) {
     switch (select) {
       case 'Settings':
-        // todo
+        Navigator.of(context).push<void>(_settingsRoute());
         break;
       case 'Reset':
         _deck.reset();
@@ -165,4 +166,22 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+  
+  Route _settingsRoute() {
+  return PageRouteBuilder<SlideTransition>(
+    pageBuilder: (context, animation, secondaryAnimation) => Settings(),
+    transitionsBuilder: (context, animation, secondartAnimation, child) {
+      var tween = Tween<Offset>(
+        begin: const Offset(1.0, 0.0),
+        end: Offset.zero,
+      );
+      var curveTween = CurveTween(curve: Curves.ease);
+      
+      return SlideTransition(
+        position: animation.drive(curveTween).drive(tween),
+        child: child,
+      );
+    },
+  );
+}
 }
