@@ -42,52 +42,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   var _deck = Deck();
-  bool _new_deck = true;
+  Card? _card;
   
   @override
   void initState() {
     super.initState();
     
     _deck.shuffle();
-  }
-  
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-  
-  void _handleSelection(String select, BuildContext context) {
-    switch (select) {
-      case 'Settings':
-        Navigator.of(context).push<void>(_settingsRoute());
-        break;
-      case 'Reset':
-        _deck.reset();
-        setState(() {
-          _new_deck = true;
-        });
-        break;
-      case 'Shuffle':
-        _deck.shuffle();
-        setState(() {
-          _new_deck = true;
-        });
-        break;
-      case 'Place':
-        String msg = '0 / ' + _deck.pile.toString();
-        if (!_new_deck) {
-          msg = (_deck.burned + 1).toString() + ' / '
-            + (_deck.pile + _deck.burned).toString();
-        }
-        _showAlertDialog(select, msg, context);
-        break;
-      case 'Count':
-        String msg = '0';
-        if (!_new_deck)
-          msg = (_deck.count + _deck.top.count).toString();
-        _showAlertDialog(select, msg, context);
-        break;
-    }
   }
   
   void _showAlertDialog(String title, String message, BuildContext context) {
@@ -106,6 +67,33 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+  
+  void _handleSelection(String select, BuildContext context) {
+    switch (select) {
+      case 'Settings':
+        Navigator.of(context).push<void>(_settingsRoute());
+        break;
+      case 'Reset':
+        _deck.reset();
+        setState(() {
+          _card = null;
+        });
+        break;
+      case 'Shuffle':
+        _deck.shuffle();
+        setState(() {
+          _card = null;
+        });
+        break;
+      case 'Place':
+        String msg = _deck.burned.toString() + ' / ' + (_deck.pile + _deck.burned).toString();
+        _showAlertDialog(select, msg, context);
+        break;
+      case 'Count':
+        _showAlertDialog(select, _deck.count.toString(), context);
+        break;
+    }
   }
 
   @override
@@ -143,17 +131,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (!_new_deck) {
-                            _deck.pop();
-                            if (_deck.isEmpty) {
-                              _deck.shuffle();
-                              _new_deck = true;
-                            }
+                          if (_deck.isEmpty) {
+                            _deck.shuffle();
+                            _card = null;
                           }
-                          else _new_deck = false;
+                          else _card = _deck.pop();
                         });
                       },
-                      child: Image.asset('assets/cards/' + (_new_deck ? 'back.png' : _deck.top.png_name)),
+                      child: Image.asset('assets/cards/' + (_card == null ? 'back.png' : _card!.png_name)),
                     ),
                   ),
                   const Spacer(),
