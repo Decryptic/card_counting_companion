@@ -48,17 +48,29 @@ class _MyHomePageState extends State<MyHomePage>
   late AnimationController _controller;
   late Animation<Alignment> _animation;
   var _alignment = Alignment.center;
+  bool swiped = false;
   
   @override
   void initState() {
     super.initState();
     
     _deck.shuffle();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     _controller.addListener(() {
       setState(() {
         _alignment = _animation.value;
       });
+    });
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        if (swiped) {
+          setState(() {
+            _drawCard();
+            _alignment = Alignment.center;
+          });
+        }
+        swiped = false;
+      }
     });
   }
   
@@ -69,11 +81,31 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
   
-  void _runAnimation() {
+  void _drawCard() {
+    if (_deck.isEmpty) {
+      _deck.shuffle();
+      _card = null;
+    }
+    else _card = _deck.pop();
+  }
+  
+  void _runAnimation(Offset pps, Size size) { // pps -> pixels per second
+    
+    // ups -> units per second
+    final upsX = pps.dx / size.width;
+    final upsY = pps.dy / size.height;
+    final ups = Offset(upsX, upsY);
+    final velocity = ups.distance;
+    
+    swiped = velocity > 2;
+    
     _animation = _controller.drive(
       AlignmentTween(
         begin: _alignment,
-        end: Alignment.center,
+        end: !swiped ? Alignment.center : Alignment(
+          upsX * 3,
+          upsY * 3,
+        ),
       ),
     );
     
@@ -159,11 +191,7 @@ class _MyHomePageState extends State<MyHomePage>
           GestureDetector(
             onTap: () {
               setState(() {
-                if (_deck.isEmpty) {
-                  _deck.shuffle();
-                  _card = null;
-                }
-                else _card = _deck.pop();
+                _drawCard();
               });
             },
             onPanDown: (details) {
@@ -178,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage>
               });
             },
             onPanEnd: (details) {
-              _runAnimation();
+              _runAnimation(details.velocity.pixelsPerSecond, size);
             },
             child: Align(
               alignment: _alignment,
