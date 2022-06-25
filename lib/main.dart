@@ -138,7 +138,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           else _card = _deck.pop();
                         });
                       },
-                      child: Image.asset('assets/cards/' + (_card == null ? 'back.png' : _card!.png_name)),
+                      child: Stack(
+                        children: <Widget>[
+                          Image.asset('assets/cards/' + (_deck.pile == 0 ? 'back.png' : _deck.top.png_name)),
+                          Image.asset('assets/cards/' + (_card == null ? 'back.png' : _card!.png_name)),
+                        ],
+                      ),
                     ),
                   ),
                   const Spacer(),
