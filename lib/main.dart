@@ -39,16 +39,28 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+  with SingleTickerProviderStateMixin {
 
   var _deck = Deck();
   Card? _card;
+  
+  late AnimationController _controller;
+  var _alignment = Alignment.center;
   
   @override
   void initState() {
     super.initState();
     
     _deck.shuffle();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1));
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose();
+    
+    super.dispose();
   }
   
   void _showAlertDialog(String title, String message, BuildContext context) {
@@ -98,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+  
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -115,44 +129,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Spacer(),
-            Expanded(
-              flex: 18,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Spacer(),
-                  Expanded(
-                    flex: 8,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (_deck.isEmpty) {
-                            _deck.shuffle();
-                            _card = null;
-                          }
-                          else _card = _deck.pop();
-                        });
-                      },
-                      child: Stack(
-                        children: <Widget>[
-                          Image.asset('assets/cards/' + (_deck.pile == 0 ? 'back.png' : _deck.top.png_name)),
-                          Image.asset('assets/cards/' + (_card == null ? 'back.png' : _card!.png_name)),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                ],
-              ),
+      body: Stack(
+        children: <Widget>[
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              'assets/cards/' + (_deck.pile == 0 ? 'back.png' : _deck.top.png_name),
+              width: size.width * 3 / 4,
+              height: size.height * 3 / 4,
             ),
-            const Spacer(),
-          ],
-        ),
+          ),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_deck.isEmpty) {
+                  _deck.shuffle();
+                  _card = null;
+                }
+                else _card = _deck.pop();
+              });
+            },
+            onPanDown: (details) {},
+            onPanUpdate: (details) {
+              setState(() {
+                _alignment += Alignment(
+                  details.delta.dx / (size.width / 8),
+                  details.delta.dy / (size.height / 8),
+                );
+              });
+            },
+            onPanEnd: (details) {},
+            child: Align(
+              alignment: _alignment,
+              child: Image.asset(
+                  'assets/cards/' + (_card == null ? 'back.png' : _card!.png_name),
+                  width: size.width * 3 / 4,
+                  height: size.height * 3 / 4,
+                ),
+            ),
+          ),
+        ],
       ),
     );
   }
