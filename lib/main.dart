@@ -159,11 +159,13 @@ class _MyHomePageState extends State<MyHomePage>
                   onPressed: () {
                     int i = int.parse(_textFieldController.text);
                     if (1 <= i && i <= 1000) {
-                      setState(() {
-                        _deck = Deck(i);
-                        _deck.shuffle();
-                        _card = null;
-                      });
+                      if (_deck.decks != i) {
+                        setState(() {
+                          _deck = Deck(i);
+                          _deck.shuffle();
+                          _card = null;
+                        });
+                      }
                       Navigator.of(ctx).pop();
                     }
                   },
