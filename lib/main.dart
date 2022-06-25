@@ -46,6 +46,7 @@ class _MyHomePageState extends State<MyHomePage>
   Card? _card;
   
   late AnimationController _controller;
+  late Animation<Alignment> _animation;
   var _alignment = Alignment.center;
   
   @override
@@ -54,6 +55,11 @@ class _MyHomePageState extends State<MyHomePage>
     
     _deck.shuffle();
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 1));
+    _controller.addListener(() {
+      setState(() {
+        _alignment = _animation.value;
+      });
+    });
   }
   
   @override
@@ -63,15 +69,26 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
   }
   
+  void _runAnimation() {
+    _animation = _controller.drive(
+      AlignmentTween(
+        begin: _alignment,
+        end: Alignment.center,
+      ),
+    );
+    
+    _controller.reset();
+    _controller.forward();
+  }
+  
   void _showAlertDialog(String title, String message, BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         title: Text(message),
-        content: Text(title),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: Text(title),
             onPressed: () {
               Navigator.of(ctx).pop();
             },
@@ -149,7 +166,9 @@ class _MyHomePageState extends State<MyHomePage>
                 else _card = _deck.pop();
               });
             },
-            onPanDown: (details) {},
+            onPanDown: (details) {
+              _controller.stop();
+            },
             onPanUpdate: (details) {
               setState(() {
                 _alignment += Alignment(
@@ -158,7 +177,9 @@ class _MyHomePageState extends State<MyHomePage>
                 );
               });
             },
-            onPanEnd: (details) {},
+            onPanEnd: (details) {
+              _runAnimation();
+            },
             child: Align(
               alignment: _alignment,
               child: Image.asset(
