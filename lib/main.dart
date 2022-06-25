@@ -2,10 +2,10 @@
 // 20 June 2022
 
 import 'package:flutter/material.dart' hide Card;
+import 'package:flutter/services.dart';
 
 import 'src/card.dart';
 import 'src/deck.dart';
-import 'src/settings.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +44,8 @@ class _MyHomePageState extends State<MyHomePage>
 
   var _deck = Deck();
   Card? _card;
+  
+  final _textFieldController = TextEditingController();
   
   late AnimationController _controller;
   late Animation<Alignment> _animation;
@@ -132,8 +134,44 @@ class _MyHomePageState extends State<MyHomePage>
   
   void _handleSelection(String select, BuildContext context) {
     switch (select) {
-      case 'Settings':
-        Navigator.of(context).push<void>(_settingsRoute());
+      case 'Decks':
+        _textFieldController.text = _deck.decks.toString();
+        showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text('Number of Decks:'),
+              content: TextField(
+                controller: _textFieldController,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(hintText: 'from 1 to 1000'),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    int i = int.parse(_textFieldController.text);
+                    if (1 <= i && i <= 1000) {
+                      setState(() {
+                        _deck = Deck(i);
+                        _deck.shuffle();
+                        _card = null;
+                      });
+                      Navigator.of(ctx).pop();
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        );
         break;
       case 'Reset':
         _deck.reset();
@@ -168,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage>
           PopupMenuButton<String>(
             onSelected: (value) => _handleSelection(value, context),
             itemBuilder: (BuildContext ctx) {
-              return { 'Settings', 'Reset', 'Shuffle', 'Place', 'Count' }.map((String choice) {
+              return { 'Decks', 'Reset', 'Shuffle', 'Place', 'Count' }.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
                   child: Text(choice),
@@ -221,22 +259,4 @@ class _MyHomePageState extends State<MyHomePage>
       ),
     );
   }
-  
-  Route _settingsRoute() {
-  return PageRouteBuilder<SlideTransition>(
-    pageBuilder: (context, animation, secondaryAnimation) => Settings(),
-    transitionsBuilder: (context, animation, secondartAnimation, child) {
-      var tween = Tween<Offset>(
-        begin: const Offset(1.0, 0.0),
-        end: Offset.zero,
-      );
-      var curveTween = CurveTween(curve: Curves.ease);
-      
-      return SlideTransition(
-        position: animation.drive(curveTween).drive(tween),
-        child: child,
-      );
-    },
-  );
-}
 }

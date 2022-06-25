@@ -15,6 +15,7 @@ class Deck {
   Card get top => _deck.last;
   int get burned => _discarded.length;
   int get pile => _deck.length;
+  int get decks => _ndecks;
   
   int get count {
     int count = 0;
