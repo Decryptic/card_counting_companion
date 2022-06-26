@@ -18,6 +18,9 @@ dependencies:
   
   # Used to support SVG rendering in Flutter.
   #flutter_svg: any
+  
+  # For splash screen.
+  flutter_native_splash: ^2.2.3+1
 
 dev_dependencies:
   flutter_test:
@@ -41,3 +44,10 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/cards/
+
+flutter_native_splash:
+  color: "#35654d"
+  android_12:
+    image: "assets/icon/launch1152.png"
+    color: "#35654d"
+    icon_background_color: "#35654d"
