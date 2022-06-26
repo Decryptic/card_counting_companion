@@ -7,9 +7,7 @@ import 'package:flutter/services.dart';
 import 'src/card.dart';
 import 'src/deck.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -45,33 +43,36 @@ class _MyHomePageState extends State<MyHomePage>
   var _deck = Deck();
   Card? _card;
   
+  final _cards_path = 'assets/cards/';
   final _textFieldController = TextEditingController();
   
-  late AnimationController _controller;
+  late final AnimationController _controller;
   late Animation<Alignment> _animation;
   var _alignment = Alignment.center;
-  bool swiped = false;
+  bool _swiped = false;
   
   @override
   void initState() {
     super.initState();
-    
     _deck.shuffle();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    
     _controller.addListener(() {
       setState(() {
         _alignment = _animation.value;
       });
     });
+    
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        if (swiped) {
+        if (_swiped) {
           setState(() {
             _drawCard();
             _alignment = Alignment.center;
           });
         }
-        swiped = false;
+        
+        _swiped = false;
       }
     });
   }
@@ -79,7 +80,6 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void dispose() {
     _controller.dispose();
-    
     super.dispose();
   }
   
@@ -92,19 +92,18 @@ class _MyHomePageState extends State<MyHomePage>
   }
   
   void _runAnimation(Offset pps, Size size) { // pps -> pixels per second
-    
+  
     // ups -> units per second
     final upsX = pps.dx / size.width;
     final upsY = pps.dy / size.height;
     final ups = Offset(upsX, upsY);
     final velocity = ups.distance;
     
-    swiped = velocity > 2;
-    
+    _swiped = velocity > 2;
     _animation = _controller.drive(
       AlignmentTween(
         begin: _alignment,
-        end: !swiped ? Alignment.center : Alignment(
+        end: !_swiped ? Alignment.center : Alignment(
           upsX * 3,
           upsY * 3,
         ),
@@ -132,48 +131,52 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
   
+  void _showDecksDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Number of Decks:'),
+          content: TextField(
+            controller: _textFieldController,
+            keyboardType: TextInputType.number,
+            inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+            decoration: InputDecoration(hintText: 'from 1 to 1000'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(ctx).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                int i = int.parse(_textFieldController.text);
+                if (1 <= i && i <= 1000) {
+                  if (_deck.decks != i) {
+                    _deck = Deck(i);
+                    _deck.shuffle();
+                    setState(() {
+                      _card = null;
+                    });
+                  }
+                  Navigator.of(ctx).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  
   void _handleSelection(String select, BuildContext context) {
     switch (select) {
       case 'Decks':
         _textFieldController.text = _deck.decks.toString();
-        showDialog(
-          context: context,
-          builder: (ctx) {
-            return AlertDialog(
-              title: Text('Number of Decks:'),
-              content: TextField(
-                controller: _textFieldController,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
-                decoration: InputDecoration(hintText: 'from 1 to 1000'),
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                  },
-                ),
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    int i = int.parse(_textFieldController.text);
-                    if (1 <= i && i <= 1000) {
-                      if (_deck.decks != i) {
-                        setState(() {
-                          _deck = Deck(i);
-                          _deck.shuffle();
-                          _card = null;
-                        });
-                      }
-                      Navigator.of(ctx).pop();
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        );
+        _showDecksDialog(context);
         break;
       case 'Reset':
         _deck.reset();
@@ -188,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage>
         });
         break;
       case 'Place':
-        String msg = _deck.burned.toString() + ' / ' + (_deck.pile + _deck.burned).toString();
+        final msg = _deck.burned.toString() + ' / ' + _deck.length.toString();
         _showAlertDialog(select, msg, context);
         break;
       case 'Count':
@@ -223,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage>
           Align(
             alignment: Alignment.center,
             child: Image.asset(
-              'assets/cards/' + (_deck.pile == 0 ? 'back.png' : _deck.top.png_name),
+              _cards_path + (_deck.isEmpty ? 'back.png' : _deck.top.png_name),
               width: size.width * 3 / 4,
               height: size.height * 3 / 4,
             ),
@@ -251,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage>
             child: Align(
               alignment: _alignment,
               child: Image.asset(
-                  'assets/cards/' + (_card == null ? 'back.png' : _card!.png_name),
+                  _cards_path + (_card == null ? 'back.png' : _card!.png_name),
                   width: size.width * 3 / 4,
                   height: size.height * 3 / 4,
                 ),

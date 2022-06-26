@@ -5,7 +5,7 @@ import 'card.dart';
 
 class Deck {
 
-  static const _nshuffles = 4;
+  final _nshuffles = 4;
   
   final int _ndecks;
   final List<Card> _deck;
@@ -13,15 +13,13 @@ class Deck {
   
   bool get isEmpty => _deck.isEmpty;
   Card get top => _deck.last;
-  int get burned => _discarded.length;
-  int get pile => _deck.length;
   int get decks => _ndecks;
+  int get burned => _discarded.length;
+  int get length => _deck.length + this.burned;
   
   int get count {
     int count = 0;
-    for (var card in _discarded) {
-      count += card.count;
-    }
+    _discarded.forEach((card) => count += card.count);
     return count;
   }
   
