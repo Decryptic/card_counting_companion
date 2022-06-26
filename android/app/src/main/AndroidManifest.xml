@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.card_counting_companion">
+    package="net.gageswenson.card_counting_companion">
    <application
         android:label="Card Counting Companion"
         android:name="${applicationName}"
