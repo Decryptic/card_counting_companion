@@ -254,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage>
             child: Align(
               alignment: _alignment,
               child: Image.asset(
-                  _cards_path + (_card == null ? 'back.png' : _card!.png_name),
+                  _cards_path + (_card?.png_name ?? 'back.png'),
                   width: size.width * 3 / 4,
                   height: size.height * 3 / 4,
                 ),
