@@ -2,5 +2,5 @@
 
 An app to help people practice counting cards.
 
-<img src="https://github.com/Decryptic/card_counting_companion/blob/main/assets/screenshots/ccc_back.png?raw=true" width="300">
-<img src="https://github.com/Decryptic/card_counting_companion/blob/main/assets/screenshots/ccc_card.png?raw=true" width="300">
+<img src="https://raw.githubusercontent.com/Decryptic/card_counting_companion/main/assets/screenshots/pixel_3xl/000.png" width="300">
+<img src="https://raw.githubusercontent.com/Decryptic/card_counting_companion/main/assets/screenshots/pixel_3xl/001.png" width="300">
