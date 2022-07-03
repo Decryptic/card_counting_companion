@@ -1,12 +1,10 @@
-Subtitle: An app to help you practice counting cards.
-
 Card Counting Companion is a free, ad-free, and open-source app built in Flutter that helps you practice counting cards without a physical deck. The app simulates real decks of cards, that you can count and check your count, whenever & wherever.
 
 The Settings menu has 5 options. Details of each are below.
 
 1) Decks - opens a prompt where you can change the number of decks in the shoe.
 
-2) Reset - takes the burned card and stacks them back into the deck in order. This way, if you lose the count, you can try counting the same deck again.
+2) Reset - takes the burned cards and stacks them back into the deck in order. This way, if you lose the count, you can try counting the same deck again.
 
 3) Shuffle - shuffles the deck. By default, when you finish counting a deck, the deck shuffles.
 
@@ -14,7 +12,7 @@ The Settings menu has 5 options. Details of each are below.
 
 5) Count - shows the current count of the deck. Used to check your count for accuracy.
 
-Card counting is a simple mathematical exercise. The goal is to determine whether the next card drawn is going to be a high card, or a low card.
+Card counting is a simple mathematical exercise. The goal is to determine whether the next card drawn is going to be a high card or a low card.
 
 High cards are: 10, Jack, Queen, King, Ace
 Low cards are: 2, 3, 4, 5, 6
