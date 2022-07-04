@@ -114,23 +114,6 @@ class _MyHomePageState extends State<MyHomePage>
     _controller.forward();
   }
   
-  void _showAlertDialog(String title, String message, BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: Text(message),
-        actions: <Widget>[
-          TextButton(
-            child: Text(title),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-  
   void _showDecksDialog(BuildContext context) {
     showDialog(
       context: context,
@@ -172,6 +155,141 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
   
+  void _showPlaceDialog(String title, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(_deck.decks_remaining.toStringAsFixed(2) + ' decks remaining.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Place'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+  
+  void _showCountDialog(String title, BuildContext context) {
+
+    final trueCount  = (double count) => 
+        (count / (_deck.decks_remaining < 1 ? 1 : _deck.decks_remaining)).toStringAsFixed(2);
+    final hilo       = _deck.count_hilo;
+    final wonghalves = _deck.count_wonghalves;
+    final hiopti     = _deck.count_hiopti;
+    final hioptii    = _deck.count_hioptii;
+    final omegaii    = _deck.count_omegaii;
+    final zen        = _deck.count_zen;
+    final red7       = _deck.count_red7;
+    final ko         = _deck.count_ko;
+
+    final size       = MediaQuery.of(context).size;
+    var _width = size.width;
+    var _height = size.height;
+    if (size.height > size.width) {
+      _width *= 2/3;
+      _height = _width * 4/5;
+    }
+    else {
+      _height *= 2/3;
+      _width = _height * 4/5;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(child: Container(
+          width: _width,
+          height: _height,
+          child: Row(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('System'),
+                  const Spacer(),
+                  const Text('Hi-Lo'),
+                  const Spacer(),
+                  const Text('Wong ½s'),
+                  const Spacer(),
+                  const Text('Hi-Opt I'),
+                  const Spacer(),
+                  const Text('Hi-Opt II'),
+                  const Spacer(),
+                  const Text('Omega II'),
+                  const Spacer(),
+                  const Text('Zen'),
+                  const Spacer(),
+                  const Text('Red 7'),
+                  const Spacer(),
+                  const Text('KO'),
+                ],
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('Running'),
+                  const Spacer(),
+                  Text('$hilo'),
+                  const Spacer(),
+                  Text(wonghalves.toStringAsFixed(1)),
+                  const Spacer(),
+                  Text('$hiopti'),
+                  const Spacer(),
+                  Text('$hioptii'),
+                  const Spacer(),
+                  Text('$omegaii'),
+                  const Spacer(),
+                  Text('$zen'),
+                  const Spacer(),
+                  Text('$red7'),
+                  const Spacer(),
+                  Text('$ko'),
+                ],
+              ),
+              const Spacer(),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text('True'),
+                  const Spacer(),
+                  Text(trueCount(hilo/1)),
+                  const Spacer(),
+                  Text(trueCount(wonghalves)),
+                  const Spacer(),
+                  Text(trueCount(hiopti/1)),
+                  const Spacer(),
+                  Text(trueCount(hioptii/1)),
+                  const Spacer(),
+                  Text(trueCount(omegaii/1)),
+                  const Spacer(),
+                  Text(trueCount(zen/1)),
+                  const Spacer(),
+                  Text('n/a'),
+                  const Spacer(),
+                  Text('n/a'),
+                ],
+              ),
+            ],
+          ),
+        ),),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Count'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+  
   void _handleSelection(String select, BuildContext context) {
     switch (select) {
       case 'Decks':
@@ -191,18 +309,20 @@ class _MyHomePageState extends State<MyHomePage>
         });
         break;
       case 'Place':
-        final msg = _deck.burned.toString() + ' / ' + _deck.length.toString();
-        _showAlertDialog(select, msg, context);
+        final title = '${_deck.burned} / ${_deck.length}';
+        _showPlaceDialog(title, context);
         break;
       case 'Count':
-        _showAlertDialog(select, _deck.count.toString(), context);
+        final title = '${_deck.count_hilo}';
+        _showCountDialog(title, context);
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
+    final proportion = 3/4;
   
     return Scaffold(
       appBar: AppBar(
@@ -227,8 +347,8 @@ class _MyHomePageState extends State<MyHomePage>
             alignment: Alignment.center,
             child: Image.asset(
               _cards_path + (_deck.isEmpty ? 'back.png' : _deck.top.png_name),
-              width: size.width * 3 / 4,
-              height: size.height * 3 / 4,
+              width: size.width * proportion,
+              height: size.height * proportion,
             ),
           ),
           GestureDetector(
@@ -255,8 +375,8 @@ class _MyHomePageState extends State<MyHomePage>
               alignment: _alignment,
               child: Image.asset(
                   _cards_path + (_card?.png_name ?? 'back.png'),
-                  width: size.width * 3 / 4,
-                  height: size.height * 3 / 4,
+                  width: size.width * proportion,
+                  height: size.height * proportion,
                 ),
             ),
           ),
