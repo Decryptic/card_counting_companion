@@ -186,98 +186,94 @@ class _MyHomePageState extends State<MyHomePage>
     final red7       = _deck.count_red7;
     final ko         = _deck.count_ko;
 
-    final size       = MediaQuery.of(context).size;
-    var _width = size.width;
-    var _height = size.height;
-    if (size.height > size.width) {
-      _width *= 2/3;
-      _height = _width * 4/5;
-    }
-    else {
-      _height *= 2/3;
-      _width = _height * 4/5;
-    }
+    var _width  = 240.0;
+    var _height = 180.0;
+    final size  = MediaQuery.of(context).size;
+    if (size.width < _width || size.height < _height)
+      _width = _height = (size.height > size.width ? size.width : size.height) * 2/3;
 
     showDialog(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
         title: Text(title),
-        content: SingleChildScrollView(child: Container(
-          width: _width,
-          height: _height,
-          child: Row(
-            children: <Widget>[
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('System'),
-                  const Spacer(),
-                  const Text('Hi-Lo'),
-                  const Spacer(),
-                  const Text('Wong ½s'),
-                  const Spacer(),
-                  const Text('Hi-Opt I'),
-                  const Spacer(),
-                  const Text('Hi-Opt II'),
-                  const Spacer(),
-                  const Text('Omega II'),
-                  const Spacer(),
-                  const Text('Zen'),
-                  const Spacer(),
-                  const Text('Red 7'),
-                  const Spacer(),
-                  const Text('KO'),
-                ],
-              ),
-              const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('Running'),
-                  const Spacer(),
-                  Text('$hilo'),
-                  const Spacer(),
-                  Text(wonghalves.toStringAsFixed(1)),
-                  const Spacer(),
-                  Text('$hiopti'),
-                  const Spacer(),
-                  Text('$hioptii'),
-                  const Spacer(),
-                  Text('$omegaii'),
-                  const Spacer(),
-                  Text('$zen'),
-                  const Spacer(),
-                  Text('$red7'),
-                  const Spacer(),
-                  Text('$ko'),
-                ],
-              ),
-              const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  const Text('True'),
-                  const Spacer(),
-                  Text(trueCount(hilo/1)),
-                  const Spacer(),
-                  Text(trueCount(wonghalves)),
-                  const Spacer(),
-                  Text(trueCount(hiopti/1)),
-                  const Spacer(),
-                  Text(trueCount(hioptii/1)),
-                  const Spacer(),
-                  Text(trueCount(omegaii/1)),
-                  const Spacer(),
-                  Text(trueCount(zen/1)),
-                  const Spacer(),
-                  Text('n/a'),
-                  const Spacer(),
-                  Text('n/a'),
-                ],
-              ),
-            ],
+        content: SingleChildScrollView(
+          child: Container(
+            width: _width,
+            height: _height,
+            child: Row(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('System'),
+                    const Spacer(),
+                    const Text('Hi-Lo'),
+                    const Spacer(),
+                    const Text('Wong ½s'),
+                    const Spacer(),
+                    const Text('Hi-Opt I'),
+                    const Spacer(),
+                    const Text('Hi-Opt II'),
+                    const Spacer(),
+                    const Text('Omega II'),
+                    const Spacer(),
+                    const Text('Zen'),
+                    const Spacer(),
+                    const Text('Red 7'),
+                    const Spacer(),
+                    const Text('KO'),
+                  ],
+                ),
+                const Spacer(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('Running'),
+                    const Spacer(),
+                    Text('$hilo'),
+                    const Spacer(),
+                    Text(wonghalves.toStringAsFixed(1)),
+                    const Spacer(),
+                    Text('$hiopti'),
+                    const Spacer(),
+                    Text('$hioptii'),
+                    const Spacer(),
+                    Text('$omegaii'),
+                    const Spacer(),
+                    Text('$zen'),
+                    const Spacer(),
+                    Text('$red7'),
+                    const Spacer(),
+                    Text('$ko'),
+                  ],
+                ),
+                const Spacer(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text('True'),
+                    const Spacer(),
+                    Text(trueCount(hilo/1)),
+                    const Spacer(),
+                    Text(trueCount(wonghalves)),
+                    const Spacer(),
+                    Text(trueCount(hiopti/1)),
+                    const Spacer(),
+                    Text(trueCount(hioptii/1)),
+                    const Spacer(),
+                    Text(trueCount(omegaii/1)),
+                    const Spacer(),
+                    Text(trueCount(zen/1)),
+                    const Spacer(),
+                    Text('n/a'),
+                    const Spacer(),
+                    Text('n/a'),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),),
+        ),
         actions: <Widget>[
           TextButton(
             child: const Text('Count'),
