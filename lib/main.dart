@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/card.dart';
 import 'src/deck.dart';
@@ -40,6 +41,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
   with SingleTickerProviderStateMixin {
 
+  var _ndecksKey = 'decks';
+  late final SharedPreferences _prefs;
+
   var _deck = Deck();
   Card? _card;
   
@@ -50,10 +54,23 @@ class _MyHomePageState extends State<MyHomePage>
   late Animation<Alignment> _animation;
   var _alignment = Alignment.center;
   bool _swiped = false;
+
+  void _loadPrefs() async {
+    _prefs = await SharedPreferences.getInstance();
+    var ndecks = _prefs.getInt(_ndecksKey);
+    if (ndecks != null) {
+      setState(() {
+        _deck = Deck(ndecks);
+        _deck.shuffle();
+      });
+    }
+  }
   
   @override
   void initState() {
     super.initState();
+    _loadPrefs();
+
     _deck.shuffle();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
     
@@ -139,11 +156,12 @@ class _MyHomePageState extends State<MyHomePage>
                 int i = int.parse(_textFieldController.text);
                 if (1 <= i && i <= 1000) {
                   if (_deck.decks != i) {
-                    _deck = Deck(i);
-                    _deck.shuffle();
                     setState(() {
+                      _deck = Deck(i);
+                      _deck.shuffle();
                       _card = null;
                     });
+                    _prefs.setInt(_ndecksKey, i);
                   }
                   Navigator.of(ctx).pop();
                 }
@@ -293,14 +311,14 @@ class _MyHomePageState extends State<MyHomePage>
         _showDecksDialog(context);
         break;
       case 'Reset':
-        _deck.reset();
         setState(() {
+          _deck.reset();
           _card = null;
         });
         break;
       case 'Shuffle':
-        _deck.shuffle();
         setState(() {
+          _deck.shuffle();
           _card = null;
         });
         break;

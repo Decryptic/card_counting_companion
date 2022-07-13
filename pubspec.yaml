@@ -19,8 +19,8 @@ dependencies:
   # Used to support SVG rendering in Flutter.
   #flutter_svg: any
   
-  # For splash screen.
   flutter_native_splash: ^2.2.3+1
+  shared_preferences: ^2.0.15
 
 flutter_native_splash:
   color: "#35654d"
